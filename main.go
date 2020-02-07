@@ -1,69 +1,28 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
+	dataCardio "cardio/lib/data"
 	"fmt"
-	"log"
 	"os"
 )
 
+func init() {
+
+}
+
 func main()  {
+	os.Setenv("UMV", "2")
+	os.Setenv("NUMLEADS", "12")
 
-	getData()
-	//getData1()
+	filePath := "./data/3.dat"
 
-
-}
-
-type Header struct {
-	Xz int16
-}
-
-func getData() {
-	file, err := os.Open("3.dat")
-	if err != nil{
-		fmt.Println(err)
+	data,err := dataCardio.GetDataFromFile(filePath)
+	if err != nil {
+		fmt.Println("data not get: \n", err)
 		os.Exit(1)
 	}
-	defer file.Close()
 
-	header := Header{}
+	dataCardio.GetDataLeeds(data)
 
-	for{
-		data := readNextBytes(file, 2)
-
-		buffer := bytes.NewBuffer(data)
-
-		err = binary.Read(buffer, binary.LittleEndian, &header)
-		if err != nil {
-			log.Fatal("binary.Read failed", err)
-		}
-
-		fmt.Print(header.Xz)
-		fmt.Print(" ")
-	}
+	fmt.Print(data)
 }
-
-func readNextBytes(file *os.File, number int) []byte {
-	bytes := make([]byte, number)
-
-	_, err := file.Read(bytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return bytes
-}
-
-//
-//func getData1() {
-//	dat, err := ioutil.ReadFile("2.dat")
-//
-//	if err != nil{
-//		fmt.Println(err)
-//		os.Exit(1)
-//	}
-//
-//	fmt.Print(string(dat))
-//}
